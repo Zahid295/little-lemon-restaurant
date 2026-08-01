@@ -1,14 +1,24 @@
-import Header from "./components/Header";
-import Main from "./components/Main";
-import Footer from "./components/Footer";
-import './App.css';
+import Navbar from "./components/Navbar/Navbar";
+import Hero from "./components/Hero/Hero";
+import Highlights from "./components/Highlights/Highlights";
+import Testimonials from "./components/Testimonials/Testimonials";
+import About from "./components/About/About";
+import Footer from "./components/Footer/Footer";
 
 function App() {
   return (
     <>
-      <Header />
-      <Main />
+    <header>
+      <Navbar />
+    </header>
+
+    <main>
+      <Hero />
+      <Highlights />
+      <Testimonials />
+      <About />
       <Footer />
+    </main>
     </>
   );
 }

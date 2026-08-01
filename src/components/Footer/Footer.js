@@ -1,3 +1,5 @@
+import "./Footer.css";
+
 export default function Footer() {
     return (
         <footer className="footer">
@@ -6,7 +8,6 @@ export default function Footer() {
                     <img 
                     src="images/footer-logo.png" 
                     alt="logo" 
-                    className="logo-img"
                     />
                  <span>Little Lemon</span>
                 </a>

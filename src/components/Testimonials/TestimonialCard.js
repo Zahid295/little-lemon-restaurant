@@ -1,7 +1,7 @@
 export default function TestimonialCard({ testimonial }) {
   return (
     <div className="testimonial-card">
-      <div className="rating">"* * * * *"</div>
+      <div className="rating">{"* ".repeat(testimonial.rating).trim()}</div>
 
       <img src={testimonial.image} alt={testimonial.name} />
 

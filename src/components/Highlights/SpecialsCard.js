@@ -1,11 +1,11 @@
 export default function SpecialsCard({ item }) {
   return (
-    <div className="special-card">
-      <img src={item.image} alt={item.name} />
+    <article className="special-card">
+      <img src={item.image} alt={item.name} className="special-img" />
 
       <div className="special-info">
         <div className="special-title">
-          <h3>{item.name}</h3>
+          <h3>{item.title}</h3>
           <span>{item.price}</span>
         </div>
 
@@ -13,6 +13,6 @@ export default function SpecialsCard({ item }) {
 
         <button>Order a Delivery</button>
       </div>
-    </div>
+    </article>
   );
 }
