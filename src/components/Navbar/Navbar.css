@@ -5,6 +5,7 @@
     padding: 20px 40px;
     background-color: white;
     position: relative;
+    z-index: 20;
 }
 
 .logo-link {
@@ -35,6 +36,17 @@
 
 .nav-links a:hover {
     color: #f4ce14;
+}
+
+.nav-links a {
+    cursor: pointer;
+    transition: color 0.2s ease;
+    text-transform: uppercase;
+    outline: none;
+}
+
+.nav-links.open {
+    right: 0;
 }
 
 /* Hamburger button for mobile devices */

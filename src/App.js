@@ -1,25 +1,23 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar/Navbar";
-import Hero from "./components/Hero/Hero";
-import Highlights from "./components/Highlights/Highlights";
-import Testimonials from "./components/Testimonials/Testimonials";
-import About from "./components/About/About";
 import Footer from "./components/Footer/Footer";
+import Home from "./pages/Home";
+// import Hero from "./components/Hero/Hero";
+// import Highlights from "./components/Highlights/Highlights";
+// import Testimonials from "./components/Testimonials/Testimonials";
+// import About from "./components/About/About";
 
 function App() {
   return (
-    <>
-    <header>
+    <Router>
       <Navbar />
-    </header>
 
-    <main>
-      <Hero />
-      <Highlights />
-      <Testimonials />
-      <About />
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
+
       <Footer />
-    </main>
-    </>
+    </Router>
   );
 }
 

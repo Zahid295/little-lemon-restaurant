@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import "./Navbar.css"
 export default function Nav() {
@@ -6,13 +7,13 @@ export default function Nav() {
 
     return (
         <nav className="navbar">
-                <a href="/" className="logo-link">
+                <Link to="/" className="logo-link">
                     <img 
                     src="images/logo.jpg" 
                     alt="logo" 
                     className="logo-img"
                     />
-                </a>
+                </Link>
             
             <button className="hamburger" onClick={() => setOpen(!open)}>
                 <span></span>
@@ -21,12 +22,12 @@ export default function Nav() {
             </button>
 
             <ul className={`nav-links ${open ? "open": ""}`}>
-                <li><a href="/">HOME</a></li>
-                <li><a href="/about">ABOUT</a></li>
-                <li><a href="/menu">MENU</a></li>
-                <li><a href="/reservations">RESERVATIONS</a></li>
-                <li><a href="order-online">ORDER ONLINE</a></li>
-                <li><a href="login">LOGIN</a></li>
+                <li><Link to="/">HOME</Link></li>
+                <li><Link to="/about">ABOUT</Link></li>
+                <li><Link to="/menu">MENU</Link></li>
+                <li><Link to="/reservations">RESERVATIONS</Link></li>
+                <li><Link to="/order-online">ORDER ONLINE</Link></li>
+                <li><Link to="/login">LOGIN</Link></li>
             </ul>
         </nav>
     );
