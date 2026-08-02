@@ -6,8 +6,8 @@ export default function Highlights() {
   return (
     <section className="highlights">
       <div className="highlights-header">
-        <h2>Specials</h2>
-        <button>Online Menu</button>
+        <h2>THIS WEEK'S SPECIALS!</h2>
+        <button className="menu-btn">Online Menu</button>
       </div>
 
       <div className="specials-scroll">

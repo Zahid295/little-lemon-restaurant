@@ -5,8 +5,8 @@ export default function TestimonialCard({ testimonial }) {
 
       <img src={testimonial.image} alt={testimonial.name} />
 
-      <h3>{testimonial.name}</h3>
-      <p>{testimonial.review}</p>
+      <h3 className="testimonial-name">{testimonial.name}</h3>
+      <p className="testimonial-text">{testimonial.review}</p>
     </div>
   );
 }

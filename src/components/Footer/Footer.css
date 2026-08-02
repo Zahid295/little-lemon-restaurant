@@ -22,9 +22,10 @@
 }
 
 .footer-logo span {
+  font-family: "Markazi Text", serif;
   color: #f4ce14;
-  font-size: 20px;
-  font-weight: bold;
+  font-size: 32px;
+  font-weight: 500;
   margin-left: 20px;
 }
 
@@ -35,6 +36,13 @@
   color: inherit;
 }
 
+.footer h4 {
+  font-family: "Karla", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
 .footer nav ul {
   list-style: none;
   padding: 0;
@@ -42,13 +50,14 @@
 }
 
 .footer nav ul li {
+  font-family: "Karla", sans-serif;
+  font-size: 16px;
   margin-bottom: 8px;
 }
 
 .footer nav a {
   text-decoration: none;
   color: white;
-  font-weight: 500;
 }
 
 .footer nav a:hover {
@@ -57,7 +66,25 @@
 
 .footer-contact {
   font-style: normal;
-  line-height: 1.8;
+}
+
+.footer-contact ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.footer-contact li {
+  font-family: "Karla", sans-serif;
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.footer-contact h4 {
+  font-family: "Karla", sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 16px;
 }
 
 .footer-media ul {
@@ -72,7 +99,6 @@
 
 .footer-media a {
   text-decoration: none;
-  color: white;
 }
 
 .footer-media a:hover {

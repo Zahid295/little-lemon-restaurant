@@ -13,7 +13,7 @@ export default function Footer() {
                 </a>
             </div>
 
-            <nav>
+            <nav class="footer-nav">
                 <h4>Navigation</h4>
                 <ul>
                 <li><a href="/">Home</a></li>
@@ -26,9 +26,11 @@ export default function Footer() {
 
             <address className="footer-contact">
                 <h4>Contact</h4>
-                Address <br />
-                Phone Number <br />
-                Email
+                <ul>
+                    <li>Address</li>
+                    <li>Phone Number</li>
+                    <li>Email</li>
+                </ul>
             </address>
 
             <nav className="footer-media">

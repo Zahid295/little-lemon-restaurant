@@ -5,7 +5,7 @@ import TestimonialCard from "./TestimonialCard";
 export default function Testimonials() {
   return (
     <section className="testimonials">
-      <h2>Testimonials</h2>
+      <h2 className="testimonials-title">Testimonials</h2>
 
       <div className="testimonials-scroll">
         {testimonials.map((t, index) => (

@@ -1,9 +1,39 @@
+.highlights {
+    padding: 30px 30px;
+}
+
 .highlights-header {
     display: flex;
     justify-content: space-around;
     align-items: center;
     padding: 0 40px;
-    margin-bottom: 30px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.highlights-header h2 {
+    font-family: "Karla", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: #333333;
+    text-transform: uppercase;
+}
+
+.menu-btn {
+    background-color: #F4CE14;
+    color: #333333;
+    font-family: "Karla", sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.menu-btn:hover {
+    background-color: #e5bf12;
 }
 
 .specials-scroll {
@@ -30,9 +60,60 @@
     margin-bottom: 15px;
 }
 
+.special-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.special-title h3 {
+    font-family: "Karla", sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #333333;
+}
+
+.price {
+    font-family: "Karla", sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #EE9972;
+}
+
+.special-info p {
+    font-family: "Karla", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #333333;
+    margin-bottom: 20px;
+}
+
+.delivery-btn {
+    background-color: #F4CE14;
+    color: #333333;
+    font-family: "Karla", sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+}
+
+.delivery-btn:hover {
+    background-color: #e5bf12;
+}
+
+
 /* Media query for mobile devices */
 
 @media (max-width: 678px) {
+    .highlights {
+        padding: 20px 20px;
+    }
+
     .highlights-header {
         flex-direction: column;
         gap: 20px;
