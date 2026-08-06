@@ -1,0 +1,13 @@
+.booking-slot {
+  display: flex;
+  align-items:center;
+  justify-content: center;
+  padding-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  height: 40px;
+  min-width: 80px;
+  font-family: "Karla", sans-serif;
+  background-color: #fff;
+}

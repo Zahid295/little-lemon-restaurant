@@ -4,9 +4,12 @@ import SpecialsCard from "./SpecialsCard";
 
 export default function Highlights() {
   return (
-    <section className="highlights">
+    <section 
+    className="highlights"
+    aria-labelledby="highlights-heading"
+    >
       <div className="highlights-header">
-        <h2>THIS WEEK'S SPECIALS!</h2>
+        <h2 id="highlights-heading">THIS WEEK'S SPECIALS!</h2>
         <button className="menu-btn">Online Menu</button>
       </div>
 

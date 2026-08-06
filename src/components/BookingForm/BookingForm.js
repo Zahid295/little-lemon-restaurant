@@ -1,36 +1,40 @@
 import { useState } from "react";
 import "./BookingForm.css";
 
-export default function BookingForm() {
+export default function BookingForm({ availableTimes, dispatch }) {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     const [guests, setGuests] = useState(1);
     const [occasion, setOccasion] = useState("Birthday");
 
-    const [availableTimes] = useState([
-        "17:00",
-        "18:00",
-        "19:00",
-        "20:00",
-        "21:00",
-        "22:00",
-    ])
-
 
 function handleSubmit(e) {
     e.preventDefault();
-    console.log({ date, time, guests, occasion });
+    dispatch({
+        type: "book-slot",
+        date,
+        time
+    });
+    alert(`Table booked for ${date} at ${time}`);
 }
 
 return (
-    <form className="booking-form" onSubmit={handleSubmit}>
+    <form 
+    className="booking-form"
+    aria-labelledby="reservations-heading"
+    onSubmit={handleSubmit}
+    >
         <label htmlFor="res-date">Choose date</label>
         <input
         type="date"
         id="res-date"
         value={date}
-        onChange={(e) => setDate(e.target.value)}
+        onChange={(e) => {
+            setDate(e.target.value);
+            dispatch({ type: "update-date", date: e.target.value })
+        }}
         required
+        aria-required="true"
         />
 
         <label htmlFor="res-time">Choose time</label>
@@ -38,6 +42,8 @@ return (
         id="res-time"
         value={time}
         onChange={(e) => setTime(e.target.value)}
+        required
+        aria-required="true"
         >
             {availableTimes.map((t) => (
                 <option key={t}>{t}</option>
@@ -53,6 +59,7 @@ return (
         value={guests}
         onChange={(e) => setGuests(e.target.value)}
         required
+        aria-required="true"
         />
 
         <label htmlFor="occasion">Occasion</label>

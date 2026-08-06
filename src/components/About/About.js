@@ -1,9 +1,17 @@
 import "./About.css";
 export default function About() {
   return (
-    <section className="about">
+    <section 
+    className="about"
+    aria-labelledby="about-heading" 
+    >
       <div className="about-text">
-        <h2 className="about-title">Little Lemon</h2>
+        <h2 
+        className="about-title"
+        id="about-heading"
+        >
+        Little Lemon
+        </h2>
         <h3 className="about-location">Chicago</h3>
         <p className="about-description">
           Little Lemon is run by two passionate brothers who bring

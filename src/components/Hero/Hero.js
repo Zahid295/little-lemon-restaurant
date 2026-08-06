@@ -1,9 +1,12 @@
 import "./Hero.css";
 export default function Hero() {
   return (
-    <section className="hero">
+    <section 
+    className="hero"
+    aria-labelledby="hero-heading"
+    >
       <div className="hero-text">
-        <h1>Little Lemon</h1>
+        <h1 id="hero-heading">Little Lemon</h1>
 
         <h2>
           Chicago
@@ -13,7 +16,12 @@ export default function Hero() {
           We are a family owned Mediterranean restaurant, focused on traditional recipes served with a modern twist.
         </p>
 
-        <button className="hero-btn">Reserve a Table</button>
+        <button 
+        className="hero-btn"
+        aria-label="Reserve a table at Little Lemon"
+        >
+          Reserve a Table
+        </button>
       </div>
 
       <div className="hero-image">

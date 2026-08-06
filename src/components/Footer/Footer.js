@@ -2,7 +2,10 @@ import "./Footer.css";
 
 export default function Footer() {
     return (
-        <footer className="footer">
+        <footer 
+        className="footer"
+        aria-label="Footer"
+        >
             <div className="footer-logo">
                 <a href="/">
                     <img 
@@ -13,7 +16,10 @@ export default function Footer() {
                 </a>
             </div>
 
-            <nav class="footer-nav">
+            <nav 
+            class="footer-nav"
+            aria-label="Footer navigation"
+            >
                 <h4>Navigation</h4>
                 <ul>
                 <li><a href="/">Home</a></li>

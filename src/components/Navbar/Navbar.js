@@ -6,16 +6,23 @@ export default function Nav() {
 
 
     return (
-        <nav className="navbar">
+        <nav 
+        className="navbar"
+        aria-label="Main navigation"
+        >
                 <Link to="/" className="logo-link">
                     <img 
                     src="images/logo.jpg" 
-                    alt="logo" 
+                    alt="Little Lemon logo" 
                     className="logo-img"
                     />
                 </Link>
             
-            <button className="hamburger" onClick={() => setOpen(!open)}>
+            <button 
+            className="hamburger"
+            aria-label="Toggle navigation menu"
+            onClick={() => setOpen(!open)}
+            >
                 <span></span>
                 <span></span>
                 <span></span>

@@ -1,0 +1,12 @@
+.booking-slot-list {
+  margin-top: 40px;
+  max-width: 300px;
+  width: 100%;
+  text-align: center;
+}
+
+.booking-slot-list h2 {
+  font-family: "Markazi Text", serif;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
