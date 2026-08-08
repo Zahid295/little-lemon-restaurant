@@ -37,7 +37,7 @@ return (
         aria-required="true"
         />
 
-        <label htmlFor="res-time">Choose time</label>
+        <label htmlFor="res-time" data-testid = "choose-time-label">Choose time</label>
         <select 
         id="res-time"
         value={time}
@@ -50,7 +50,7 @@ return (
                 ))}
         </select>
 
-        <label htmlFor="guests">Number of guests</label>
+        <label htmlFor="guests" data-testid = "guests-label">Number of guests</label>
         <input 
         type="Number"
         id="guests"

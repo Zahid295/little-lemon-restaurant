@@ -55,3 +55,5 @@ export default function Reservations() {
         </section>
     );
 }
+
+export { initializeTimes, updateTimes };
