@@ -4,22 +4,24 @@ import BookingSlotList from "../components/BookingSlotList/BookingSlotList";
 import "./Reservations.css";
 
 function initializeTimes() {
+    const today = new Date()
   return {
-    available: ["17:00", "18:00", "19:00", "20:00", "21:00", "22:00"],
+    available: fetchAPI(today),
     booked: {}
   }
 }
 
 function updateTimes(state, action) {
     if (action.type === "update-date") {
-        const date = action.date;
-        const allSlots = ["17:00", "18:00", "19:00", "20:00", "21:00", "22:00"];
-        const bookedForDate = state.booked[date] || [];
+        const SelectedDate = new Date(action.date)
+        // const date = action.date;
+        // const allSlots = ["17:00", "18:00", "19:00", "20:00", "21:00", "22:00"];
+        // const bookedForDate = state.booked[date] || [];
 
-        const available = allSlots.filter((slot) => !bookedForDate.includes(slot));
+        // const available = allSlots.filter((slot) => !bookedForDate.includes(slot));
         return {
             ...state,
-            available
+            available: fetchAPI(SelectedDate)
         };
     }
     
@@ -32,8 +34,7 @@ function updateTimes(state, action) {
             booked: {
                 ...state.booked,
                 [date]: [...bookedForDate, time]
-            },
-            available: state.available.filter((slot) => slot !== time)
+            }
         };
     }
     return state
