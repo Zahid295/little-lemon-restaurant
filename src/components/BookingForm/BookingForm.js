@@ -1,22 +1,25 @@
 import { useState } from "react";
 import "./BookingForm.css";
 
-export default function BookingForm({ availableTimes, dispatch }) {
+export default function BookingForm({ availableTimes, dispatch, submitForm }) {
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
     const [guests, setGuests] = useState(1);
     const [occasion, setOccasion] = useState("Birthday");
 
 
-function handleSubmit(e) {
+  function handleSubmit(e) {
     e.preventDefault();
-    dispatch({
-        type: "book-slot",
-        date,
-        time
-    });
-    alert(`Table booked for ${date} at ${time}`);
-}
+
+    const formData = {
+      date,
+      time,
+      guests,
+      occasion
+    };
+
+    submitForm(formData);
+  }
 
 return (
     <form 
