@@ -34,7 +34,7 @@ return (
         value={date}
         onChange={(e) => {
             setDate(e.target.value);
-            dispatch({ type: "update-date", date: e.target.value })
+            dispatch({ type: "update-date", payload: new Date(e.target.value) })
         }}
         required
         aria-required="true"

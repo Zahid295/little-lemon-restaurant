@@ -3,23 +3,17 @@ import BookingForm from "../components/BookingForm/BookingForm";
 import BookingSlotList from "../components/BookingSlotList/BookingSlotList";
 import "./Reservations.css";
 
+/* global fetchAPI */
 function initializeTimes() {
-    const today = new Date()
-  return {
-    /* global fetchAPI */
-    available: fetchAPI(today)
-  }
+    const today = new Date();
+    return fetchAPI(today);
 }
 
 function updateTimes(state, action) {
-    if (action.type === "update-date") {
-        const SelectedDate = new Date(action.date)
-        return {
-            ...state,
-            available: fetchAPI(SelectedDate)
-        };
+    if (action.type === "update-times") {
+        return fetchAPI(action.payload);
     }
-    return state
+    return state;
 }
 
 export default function Reservations({ submitForm }) {
@@ -33,8 +27,8 @@ export default function Reservations({ submitForm }) {
             <h1 id="reservations-heading">Reserve a Table</h1>
             <p>Please fill in the form below to complete your reservation.</p>
 
-            <BookingForm availableTimes={state.available} dispatch={dispatch} submitForm={submitForm} />
-            <BookingSlotList availableTimes={state.available} />
+            <BookingForm availableTimes={state} dispatch={dispatch} submitForm={submitForm} />
+            <BookingSlotList availableTimes={state} />
         </section>
     );
 }
