@@ -6,6 +6,13 @@ export default function BookingForm({ availableTimes, dispatch, submitForm }) {
     const [time, setTime] = useState("");
     const [guests, setGuests] = useState(1);
     const [occasion, setOccasion] = useState("Birthday");
+    
+    // Validation with React
+    const formValid =
+    date !== "" &&
+    time !== "" &&
+    guests >= 1 &&
+    guests <= 10 &&
 
 
   function handleSubmit(e) {
@@ -37,6 +44,7 @@ return (
             dispatch({ type: "update-date", payload: new Date(e.target.value) })
         }}
         required
+        min={new Date().toISOString().split("T")[0]}
         aria-required="true"
         />
 
@@ -73,7 +81,7 @@ return (
             <option>Anniversary</option>
         </select>
 
-        <input type="submit" value="Make your Reservation" />
+        <input type="submit" value="Make your Reservation" disabled={!formValid} />
     </form>
 )
 }
