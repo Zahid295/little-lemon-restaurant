@@ -12,7 +12,7 @@ export default function BookingForm({ availableTimes, dispatch, submitForm }) {
     date !== "" &&
     time !== "" &&
     guests >= 1 &&
-    guests <= 10 &&
+    guests <= 10;
 
 
   function handleSubmit(e) {
@@ -81,7 +81,12 @@ return (
             <option>Anniversary</option>
         </select>
 
-        <input type="submit" value="Make your Reservation" disabled={!formValid} />
+        <input 
+        type="submit" 
+        value="Make your Reservation" 
+        disabled={!formValid}
+        data-testid="submit-button"
+        />
     </form>
 )
 }
