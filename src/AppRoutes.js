@@ -2,6 +2,7 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import AboutPage from "./pages/AboutPage";
+import MenuPage from "./pages/MenuPage";
 import Reservations from "./pages/Reservations";
 import ConfirmedBooking from "./components/ConfirmedBooking/ConfirmedBooking";
 
@@ -19,6 +20,7 @@ export default function AppRoutes() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/about" element={<AboutPage />} />
+      <Route path="/menu" element={<MenuPage />} />
       <Route
         path="/reservations"
         element={<Reservations submitForm={submitForm} />}
