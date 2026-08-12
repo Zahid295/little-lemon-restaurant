@@ -1,0 +1,52 @@
+/* Page wrapper */
+.about-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+/* Page title */
+.about-page h1 {
+  font-family: 'Markazi Text', serif;
+  font-weight: 500;
+  font-size: 2.5rem;
+  color: #333333;
+  max-width: 420px;
+  text-align: left;
+  margin: 0 auto 0 auto;
+  padding-left: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+/* Hide About component's h2 only on AboutPage */
+.about-page .about-title {
+  display: none;
+}
+
+/* Reduce top padding of About component */
+.about-page .about {
+  margin-top: 0.5rem;
+  padding-top: 20px;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .about-page {
+    padding: 2rem 1rem;
+  }
+
+  .about-page h1 {
+    font-size: 2rem;
+    max-width: 100%;
+    text-align: center;
+    padding-left: 0;
+  }
+
+  /* Mobile About spacing */
+  .about-page .about {
+    padding-top: 10px;
+  }
+}
+
+
+
