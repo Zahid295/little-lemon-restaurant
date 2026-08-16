@@ -1,4 +1,3 @@
-// src/pages/MenuPage.js
 import specials from "../data/specials";
 import SpecialsCard from "../components/Highlights/SpecialsCard";
 import "./MenuPage.css";

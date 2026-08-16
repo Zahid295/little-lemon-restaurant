@@ -1,0 +1,54 @@
+.order-page {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 4rem 2rem;
+}
+
+.order-title {
+  font-family: 'Markazi Text', serif;
+  font-weight: 500;
+  font-size: 2.5rem;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.order-subtitle {
+  font-family: 'Karla', sans-serif;
+  font-size: 1rem;
+  color: #333333;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.order-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: flex-start;
+}
+
+.order-items .special-card {
+  flex: 1 1 260px;
+  max-width: 280px;
+}
+
+@media (max-width: 1024px) {
+  .order-items {
+    justify-content: center;
+  }
+  .order-title,
+  .order-subtitle {
+    text-align: center;
+  }
+}
+
+@media (max-width: 678px) {
+  .order-items {
+    justify-content: center;
+  }
+  .order-title,
+  .order-subtitle {
+    text-align: center;
+  }
+}

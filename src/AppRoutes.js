@@ -5,6 +5,7 @@ import AboutPage from "./pages/AboutPage";
 import MenuPage from "./pages/MenuPage";
 import Reservations from "./pages/Reservations";
 import ConfirmedBooking from "./components/ConfirmedBooking/ConfirmedBooking";
+import OrderOnlinePage from "./pages/OrderOnlinePage";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ export default function AppRoutes() {
         element={<Reservations submitForm={submitForm} />}
       />
       <Route path="/confirmed" element={<ConfirmedBooking />} />
+      <Route path="/order-online" element={<OrderOnlinePage />} />
     </Routes>
   );
 }

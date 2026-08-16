@@ -1,4 +1,6 @@
-export default function SpecialsCard({ item }) {
+import { Link } from "react-router-dom";
+
+export default function SpecialsCard({ item, addToCart, showOrderLink = true, showAddToCart = false }) {
   return (
     <article className="special-card">
       <img src={item.image} alt={item.name} className="special-img" />
@@ -11,7 +13,19 @@ export default function SpecialsCard({ item }) {
 
         <p>{item.description}</p>
 
-        <button className="delivery-btn">Order a Delivery</button>
+        {showOrderLink && (
+          <Link to="/order-online" className="delivery-btn">
+          Order a Delivery
+        </Link>
+        )}
+                {showAddToCart && (
+          <button 
+            className="delivery-btn"
+            onClick={() => addToCart(item, 1)}
+          >
+            Add to Cart
+          </button>
+        )}
       </div>
     </article>
   );
