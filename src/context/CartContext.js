@@ -25,8 +25,24 @@ export function CartProvider({ children }) {
         setCart([]);
     }
 
+    function increaseQty(id) {
+        setCart(prev =>
+            prev.map(item =>
+            item.id === id ? {...item, quantity: item.quantity + 1} : item
+        )
+      );
+    }
+
+    function decreaseQty(id) {
+        setCart(prev =>
+            prev.map(item =>
+                item.id === id ? {...item, quantity: Math.max(1, item.quantity - 1)} : item
+            )
+        );
+    }
+
     return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart}}>
+        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, increaseQty, decreaseQty }}>
             {children}
             {console.log("CART STATE:", cart)}
         </CartContext.Provider>

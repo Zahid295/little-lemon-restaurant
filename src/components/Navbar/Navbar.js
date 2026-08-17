@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import "./Navbar.css"
+import "./Navbar.css";
+import { useCart } from "../../context/CartContext";
+
 export default function Nav() {
+    const { cart } = useCart();
+    const count = cart.reduce((sum, item) => sum + item.quantity, 0);
     const [open, setOpen] = useState(false);
 
 
@@ -34,6 +38,11 @@ export default function Nav() {
                 <li><Link to="/menu">MENU</Link></li>
                 <li><Link to="/reservations">RESERVATIONS</Link></li>
                 <li><Link to="/order-online">ORDER ONLINE</Link></li>
+                <li>
+                    <Link to="/cart">
+                    Cart{count > 0 && <span className="cart-badge">({count})</span>}
+                    </Link>
+                </li>
                 <li><Link to="/login">LOGIN</Link></li>
             </ul>
         </nav>
