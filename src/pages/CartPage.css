@@ -8,7 +8,8 @@
 
 .cart-title {
   font-family: 'Markazi Text', serif;
-  font-size: 2.5rem;
+  font-size: 40px;
+  font-weight: 700;
   color: #333333;
   margin-bottom: 2rem;
 }
@@ -19,7 +20,7 @@
   margin-top: 2rem;
 }
 
-/* Cart Items (Desktop) */
+/* Cart Items */
 .cart-item {
   display: flex;
   justify-content: center;
@@ -112,7 +113,7 @@
   margin-bottom: 1rem;
 }
 
-/* Back Button (Continue Ordering) */
+/* Back Button */
 .back-btn {
   display: inline-block;
   background-color: #333333;

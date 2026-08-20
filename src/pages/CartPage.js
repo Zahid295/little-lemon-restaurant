@@ -61,9 +61,9 @@ export default function CartPage() {
                 <div className="cart-footer">
                     <h2>Total: €{total.toFixed(2)}</h2>
 
-                    {/* <Link to="/checkout" className="checkout-btn">
+                    <Link to="/checkout" className="checkout-btn">
                     Proceed to checkout
-                    </Link> */}
+                    </Link>
 
                     <Link to="/order-online" className="back-btn">
                     Continue Ordering

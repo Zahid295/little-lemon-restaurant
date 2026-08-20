@@ -7,6 +7,7 @@ import Reservations from "./pages/Reservations";
 import ConfirmedBooking from "./components/ConfirmedBooking/ConfirmedBooking";
 import OrderOnlinePage from "./pages/OrderOnlinePage";
 import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
 
 export default function AppRoutes() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export default function AppRoutes() {
       <Route path="/confirmed" element={<ConfirmedBooking />} />
       <Route path="/order-online" element={<OrderOnlinePage />} />
       <Route path="/Cart" element={<CartPage />} />
+      <Route path="/checkout" element={<CheckoutPage />} />
     </Routes>
   );
 }
