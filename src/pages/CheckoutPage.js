@@ -133,7 +133,7 @@ export default function CheckoutPage() {
             const numericPrice = Number(item.price.replace("$", ""));
             return (
               <p key={item.title}>
-                {item.title} x {item.quantity} — $
+                {item.title} x {item.quantity} - $
                 {(numericPrice * item.quantity).toFixed(2)}
               </p>
             );
