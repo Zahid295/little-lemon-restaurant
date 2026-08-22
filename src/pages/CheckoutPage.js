@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./CheckoutPage.css";
 
 export default function CheckoutPage() {
     const { cart } = useCart();
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
 
     const [form, setForm] = useState({
         name: "",
@@ -44,8 +44,13 @@ export default function CheckoutPage() {
 
         if (!validate()) return;
 
-        console.log("submitted");
-    }
+        navigate("/order-confirmation", {
+          state: {
+            customer: form,
+            cart,
+          },
+        });
+    };
 
     const total = cart.reduce((sum, item) => {
         const numericPrice = Number(item.price.replace("$", ""));
