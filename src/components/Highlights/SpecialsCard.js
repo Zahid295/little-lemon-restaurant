@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function SpecialsCard({ item, addToCart, showOrderLink = true, showAddToCart = false }) {
   return (
     <article className="special-card">
-      <img src={item.image} alt={item.name} className="special-img" />
+      <img src={item.image} alt={item.title} className="special-img" />
 
       <div className="special-info">
         <div className="special-title">
