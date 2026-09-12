@@ -48,7 +48,7 @@ export default function MenuPage() {
   return (
     <section className="menu-page">
       <h1 className="menu-title">Our Menu</h1>
-
+    <div className="menu-filters">
       <input 
       type="text" 
       placeholder="Search items..." 
@@ -70,6 +70,7 @@ export default function MenuPage() {
         <option value="desserts">Desserts</option>
         <option value="drinks">Drinks</option>
       </select>
+      </div>
 
       {loading && <p>Loading menu...</p>}
 
@@ -99,6 +100,7 @@ export default function MenuPage() {
 
         <button
           disabled={menuItems.length < perPage}
+          className={menuItems.length < perPage ? "disabled" : ""}
           onClick={() => setPage((prev) => prev + 1)}
         >
           Next

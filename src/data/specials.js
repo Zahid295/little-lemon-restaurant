@@ -4,7 +4,7 @@ const specials = [
     title: "Greek Salad",
     price: "$12.99",
     description: "The famous greek salad of crispy lettuce, peppers, olives and out chicago style feta cheese, garnished with crunchy garlic and rosemary croutons.",
-    image: "images/greek-salad.jpg",
+    image: "images/greek_salad.jpg",
   },
   {
     id: 2,
@@ -18,7 +18,7 @@ const specials = [
     title: "Lemon Dessert",
     price: "$4.99",
     description: "This comes straight from grandma's recipe book, every last ingredient has been sourced and is as authentic as can be imagined",
-    image: "images/lemon-dessert.jpg",
+    image: "images/lemon_cake.jpg",
   },
 ];
 
