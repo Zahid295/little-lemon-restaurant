@@ -1,13 +1,13 @@
 from django.shortcuts import render
 from rest_framework import generics, status
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import get_object_or_404
 from django.db import models
 
-from .models import MenuItem
-from .serializers import MenuItemSerializer
+from .models import MenuItem, Cart
+from .serializers import MenuItemSerializer, CartSerializer
 
 # Create your views here.
 
@@ -102,3 +102,35 @@ class MenuItemDetailView(generics.RetrieveUpdateDestroyAPIView):
         item = get_object_or_404(MenuItem, pk=pk)
         item.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CartView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = CartSerializer
+
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+    
+    def create(self, request):
+        menuitem_id = request.data.get("menuitem")
+        quantity = int(request.data.get("quantity", 1))
+
+        menuitem = get_object_or_404(MenuItem, id=menuitem_id)
+
+        unit_price = menuitem.price
+        price = unit_price * quantity
+
+        cart_item, created = Cart.objects.update_or_create(
+            user=request.user,
+            menuitem=menuitem,
+            defaults={
+                "quantity": quantity,
+                "unit_price": unit_price,
+                "price": price
+            }
+        )
+        serialized_item = CartSerializer(cart_item)
+        return Response(serialized_item.data, status.HTTP_201_CREATED)
+    
+    def delete(self, request):
+        Cart.objects.filter(user=request.user).delete()
+        return Response({"message": "Cart removed"}, status.HTTP_200_OK)
