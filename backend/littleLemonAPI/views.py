@@ -5,9 +5,10 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import get_object_or_404
 from django.db import models
-
-from .models import MenuItem, Cart
-from .serializers import MenuItemSerializer, CartSerializer
+from datetime import date
+from django.contrib.auth.models import User
+from .models import MenuItem, Cart, Order, OrderItem
+from .serializers import MenuItemSerializer, CartSerializer, OrderSerializer, UserSerializer
 
 # Create your views here.
 
@@ -134,3 +135,122 @@ class CartView(generics.ListCreateAPIView):
     def delete(self, request):
         Cart.objects.filter(user=request.user).delete()
         return Response({"message": "Cart removed"}, status.HTTP_200_OK)
+    
+
+class OrderListCreateView(generics.ListCreateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
+
+    def get_queryset(self):
+        if self.request.user.groups.filter(name="Manager").exists():
+            return Order.objects.all()
+        
+        if self.request.user.groups.filter(name="Delivery Crew").exists():
+            return Order.objects.filter(delivery_crew=self.request.user)
+        
+        return Order.objects.filter(user=self.request.user)
+    
+    def create(self, request):
+        user = request.user
+        cart_items = Cart.objects.filter(user=user)
+        if not cart_items.exists():
+            return Response({"message": "Cart is empty"}, status.HTTP_400_BAD_REQUEST)
+        
+        total = sum(item.price for item in cart_items)
+
+        order = Order.objects.create(
+            user=user,
+            total=total,
+            date=date.today()
+        )
+
+        for item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                menuitem=item.menuitem,
+                quantity=item.quantity,
+                unit_price=item.unit_price,
+                price=item.price
+            )
+
+        cart_items.delete()
+        serialized_order = OrderSerializer(order)
+        return Response(serialized_order.data, status.HTTP_201_CREATED)
+            
+# Customer GET, Delivery Crew PATCH, Manager GET, PATCH, PUT and DELETE view
+class OrderDetailUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = OrderSerializer
+    lookup_url_kwarg = "orderId"
+
+    def get_queryset(self):
+        if self.request.user.groups.filter(name="Manager").exists():
+            return Order.objects.all()
+        if self.request.user.groups.filter(name="Delivery Crew").exists():
+                return Order.objects.filter(delivery_crew=self.request.user)
+        return Order.objects.filter(user=self.request.user)
+    
+    def patch(self, request, orderId):
+        return self.update(request, orderId)
+    
+    def update(self, request, orderId):
+        user = request.user
+        data = request.data
+        
+        try:
+            order = Order.objects.get(id=orderId)
+        except Order.DoesNotExist:
+            return Response({"message": "Order not found"}, status.HTTP_404_NOT_FOUND)
+        
+        # Delivery crew logic
+        if user.groups.filter(name="Delivery Crew").exists():
+            if "status" not in data:
+                return Response({"message": "Delivery crew can only update status"}, status.HTTP_403_FORBIDDEN)
+            status_value = int(data["status"])
+            if status_value not in (0, 1):
+                return Response(
+                    {"message": "Status must be 0 or 1"}, 
+                    status.HTTP_400_BAD_REQUEST
+                    )
+            order.status = status_value
+            order.save()
+            serialized_order = OrderSerializer(order)
+            return Response(serialized_order.data, status.HTTP_200_OK)
+        
+        # Customer logic
+        if not user.groups.filter(name="Manager").exists():
+            return Response({"message": "Only managers and delivery crew can update orders"}, status.HTTP_403_FORBIDDEN)
+
+        # Manager logic
+        if "delivery_crew" in data:
+            crew_id = data["delivery_crew"]
+            if not User.objects.filter(id=crew_id, groups__name="Delivery Crew").exists():
+                return Response(
+                    {"message": "delivery_crew must a valid delivery crew user"}, 
+                    status.HTTP_400_BAD_REQUEST
+                    )
+            order.delivery_crew = User.objects.get(id=crew_id)
+
+        if "status" in data:
+            status_value = int(data["status"])
+            if status_value not in (0, 1):
+                return Response(
+                    {"message": "Status must be 0 or 1"}, 
+                    status.HTTP_400_BAD_REQUEST
+                    )
+            order.status = status_value
+
+        order.save()
+        serialized_order = OrderSerializer(order)
+        return Response(serialized_order.data, status.HTTP_200_OK)
+    
+    def destroy(self, request, orderId):
+        if not request.user.groups.filter(name="Manager").exists():
+            return Response({"message": "Only managers can delete orders"}, status.HTTP_403_FORBIDDEN)
+        try:
+            order = Order.objects.get(id=orderId)
+        except Order.DoesNotExist:
+            return Response({"message": "Order not found"}, status.HTTP_404_NOT_FOUND)
+        order.delete()
+        return Response({"message": "Order deleted successfully"}, status.HTTP_200_OK)
+
