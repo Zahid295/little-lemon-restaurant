@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     "littleLemonAPI",
     "corsheaders",
     "rest_framework",
+    "rest_framework.authtoken",
+    "djoser",
 ]
 
 MIDDLEWARE = [
