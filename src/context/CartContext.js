@@ -1,54 +1,102 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useEffect } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-    const [cart, setCart] = useState([]);
+  const { accessToken } = useAuth();
+  const [cart, setCart] = useState([]);
 
-    function addToCart(item, quantity) {
-        setCart(prev => {
-            const existing = prev.find(i => i.id === item.id);
-            if (existing) {
-                return prev.map(i =>
-                    i.id === item.id ? { ...i, quantity: i.quantity + quantity}: i
-                );
-            }
-            return [...prev, {...item, quantity}]
-        });
-    }
+  async function loadCart() {
+    if (!accessToken) return;
 
-    function removeFromCart(id) {
-        setCart(prev => prev.filter(item => item.id !== id));
-    }
+    const res = await fetch("http://127.0.0.1:8000/api/cart/menu-items", {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
 
-    function clearCart() {
-        setCart([]);
-    }
+    const data = await res.json();
+    setCart(data);
+  }
 
-    function increaseQty(id) {
-        setCart(prev =>
-            prev.map(item =>
-            item.id === id ? {...item, quantity: item.quantity + 1} : item
-        )
-      );
-    }
+  async function addToCart(item, quantity = 1) {
+    await fetch("http://127.0.0.1:8000/api/cart/menu-items", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        menuitem: item.id,
+        quantity,
+      }),
+    });
 
-    function decreaseQty(id) {
-        setCart(prev =>
-            prev.map(item =>
-                item.id === id ? {...item, quantity: Math.max(1, item.quantity - 1)} : item
-            )
-        );
-    }
+    loadCart();
+  }
 
-    return (
-        <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, increaseQty, decreaseQty }}>
-            {children}
-            {console.log("CART STATE:", cart)}
-        </CartContext.Provider>
-    )
+  async function increaseQty(menuitemId) {
+    const item = cart.find((i) => i.menuitem.id === menuitemId);
+    if (!item) return;
+
+    await addToCart({ id: menuitemId }, item.quantity + 1);
+  }
+
+  async function decreaseQty(menuitemId) {
+    const item = cart.find((i) => i.menuitem.id === menuitemId);
+    if (!item) return;
+
+    const newQty = Math.max(1, item.quantity - 1);
+    await addToCart({ id: menuitemId }, newQty);
+  }
+
+  async function removeFromCart(menuitemId) {
+    await fetch(`http://127.0.0.1:8000/api/cart/menu-items/${menuitemId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+
+    loadCart();
+  }
+
+  async function clearCart() {
+    await fetch("http://127.0.0.1:8000/api/cart/menu-items", {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      credentials: "include",
+    });
+
+    loadCart();
+  }
+
+  useEffect(() => {
+    loadCart();
+  }, [accessToken, loadCart]);
+
+  return (
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        increaseQty,
+        decreaseQty,
+        removeFromCart,
+        clearCart,
+      }}
+    >
+      {children}
+    </CartContext.Provider>
+  );
 }
 
 export function useCart() {
-    return useContext(CartContext);
+  return useContext(CartContext);
 }
