@@ -1,10 +1,20 @@
-import specials from "../data/specials";
+import { useEffect, useState } from "react";
 import SpecialsCard from "../components/Highlights/SpecialsCard";
 import { useCart } from "../context/CartContext";
 import "./OrderOnlinePage.css";
 
 export default function OrderOnline() {
     const { addToCart } = useCart();
+    const [items, setItems] = useState([]);
+
+    useEffect(() => {
+     async function load() {
+       const res = await fetch("http://127.0.0.1:8000/api/menu-items");
+       const data = await res.json();
+       setItems(data);
+     }
+     load();
+    }, []);
 
     return (
         <section className="order-page">
@@ -12,7 +22,7 @@ export default function OrderOnline() {
             <p className="order-subtitle">Choose items below to start your order</p>
 
             <div className="order-items">
-                {specials.map((item, index) => (
+                {items.map((item, index) => (
                     <SpecialsCard 
                     key={index} 
                     item={item}
