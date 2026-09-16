@@ -5,10 +5,6 @@ import "./CartPage.css";
 export default function CartPage() {
     const { cart, increaseQty, decreaseQty, removeFromCart } = useCart();
 
-    const total = cart.reduce(
-        (sum, item) => sum + Number(item.price.replace("$", "")) * item.quantity, 0
-    );
-
     return (
         <section className="cart-page">
             <h1 className="cart-title">Your Cart</h1>
@@ -26,10 +22,8 @@ export default function CartPage() {
                     <img src={item.image} alt={item.title} className="cart-img" />
 
                     <div className="cart-details">
-                        <h3>{item.title}</h3>
-                        <p className="cart-price">
-                            ${(Number(item.price.replace("$", "")) * item.quantity).toFixed(2)}
-                        </p>
+                        <h3>{item.menuitem.title}</h3>
+                        <p className="cart-price">€{item.price}</p>
 
                         <div className="cart-qty-controls">
                             <button 
