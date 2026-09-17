@@ -39,23 +39,35 @@ export default function CheckoutPage() {
         return Object.keys(newErrors).length === 0;
     }
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    async function handleSubmit(e) {
+    e.preventDefault();
 
-        if (!validate()) return;
+    if (!validate()) return;
 
-        navigate("/order-confirmation", {
-          state: {
-            customer: form,
-            cart,
-          },
-        });
-    };
+    const res = await fetch("http://127.0.0.1:8000/api/orders", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      alert("Failed to place order. Please try again.");
+      return;
+    }
+
+    const order = await res.json(); 
+
+    
+    navigate("/order-confirmation", {
+      state: {
+        order,
+        customer: form,
+      },
+    });
+  }
 
     const total = cart.reduce((sum, item) => {
-        const numericPrice = Number(item.price.replace("$", ""));
-        return sum + numericPrice * item.quantity;
-    }, 0)
+      return sum + Number(item.price);
+  }, 0);
 
     return (
 <section className="checkout-page">
@@ -134,15 +146,11 @@ export default function CheckoutPage() {
         <h2 className="section-heading">Order Summary</h2>
 
         <div className="summary-box">
-          {cart.map((item) => {
-            const numericPrice = Number(item.price.replace("$", ""));
-            return (
-              <p key={item.title}>
-                {item.title} x {item.quantity} - $
-                {(numericPrice * item.quantity).toFixed(2)}
-              </p>
-            );
-          })}
+          {cart.map((item) => (
+                <p key={item.id}>
+                  {item.menuitem.title} x {item.quantity} — €{item.price}
+                </p>
+          ))}
 
           <h3 className="summary-total">Total: €{total.toFixed(2)}</h3>
         </div>
