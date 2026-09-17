@@ -4,7 +4,7 @@ import "./OrderConfirmationPage.css";
 export default function OrderConfirmationPage() {
   const { state } = useLocation();
 
-  if (!state) {
+  if (!state || !state.order) {
     return (
       <section className="confirmation-page">
         <h1 className="confirmation-title">Order Not Found</h1>
@@ -18,12 +18,9 @@ export default function OrderConfirmationPage() {
     );
   }
 
-  const { customer, cart } = state;
+  const { order, customer } = state;
 
-  const total = cart.reduce((sum, item) => {
-    const numericPrice = Number(item.price.replace("$", ""));
-    return sum + numericPrice * item.quantity;
-  }, 0);
+  const total = Number(order.total);
 
   const eta =
     customer.orderType === "pickup"
@@ -40,6 +37,7 @@ export default function OrderConfirmationPage() {
       </div>
 
       <div className="confirmation-flex">
+
         <div className="confirmation-card">
           <h2 className="section-heading">Order Details</h2>
 
@@ -55,24 +53,22 @@ export default function OrderConfirmationPage() {
               <p><strong>Postcode:</strong> {customer.postcode}</p>
             </>
           )}
+
+          <p><strong>Order ID:</strong> {order.id}</p>
+          <p><strong>Date:</strong> {order.date}</p>
         </div>
 
         <div className="confirmation-card">
           <h2 className="section-heading">Items</h2>
 
           <div className="items-list">
-            {cart.map((item) => {
-              const numericPrice = Number(item.price.replace("$", ""));
-              return (
-                <div className="item-row" key={item.title}>
-                  <span className="item-title">{item.title}</span>
-                  <span className="item-qty">x {item.quantity}</span>
-                  <span className="item-price">
-                    €{(numericPrice * item.quantity).toFixed(2)}
-                  </span>
-                </div>
-              );
-            })}
+            {order.order_items.map((item) => (
+              <div className="item-row" key={item.id}>
+                <span className="item-title">{item.menuitem.title}</span>
+                <span className="item-qty">x {item.quantity}</span>
+                <span className="item-price">€{item.price}</span>
+              </div>
+            ))}
           </div>
 
           <div className="total-row">
@@ -90,4 +86,5 @@ export default function OrderConfirmationPage() {
     </section>
   );
 }
+
 
