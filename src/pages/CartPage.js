@@ -3,67 +3,73 @@ import { Link } from "react-router-dom";
 import "./CartPage.css";
 
 export default function CartPage() {
-    const { cart, increaseQty, decreaseQty, removeFromCart } = useCart();
+  const { cart, increaseQty, decreaseQty, removeFromCart } = useCart();
 
-    return (
-        <section className="cart-page">
-            <h1 className="cart-title">Your Cart</h1>
+  return (
+    <section className="cart-page">
+      <h1 className="cart-title">Your Cart</h1>
 
-            {cart.length === 0 && (
-                <div className="cart-empty">
-                    <p>Your cart is empty.</p>
-                    <Link to="/order-online" className="back-btn">
-                    Continue Ordering
-                    </Link>
-                </div>
-            )}
-            {cart.map(item => (
-                <div key={item.id} className="cart-item">
-                    <img src={item.image} alt={item.title} className="cart-img" />
+      {cart.length === 0 && (
+        <div className="cart-empty">
+          <p>Your cart is empty.</p>
+          <Link to="/order-online" className="back-btn">
+            Continue Ordering
+          </Link>
+        </div>
+      )}
 
-                    <div className="cart-details">
-                        <h3>{item.menuitem.title}</h3>
-                        <p className="cart-price">€{item.price}</p>
+      {cart.map((item) => (
+        <div key={item.id} className="cart-item">
+          <img
+            src={item.menuitem.image || "/images/default.jpg"}
+            alt={item.menuitem.title}
+            className="cart-img"
+          />
 
-                        <div className="cart-qty-controls">
-                            <button 
-                            onClick={() => decreaseQty(item.id)}
-                            className="qty-btn"
-                            >
-                            -
-                            </button>
-                            <span className="qty-number">{item.quantity}</span>
-                            <button 
-                            onClick={() => increaseQty(item.id)}
-                            className="qty-btn"
-                            >
-                            +
-                            </button>
+          <div className="cart-details">
+            <h3>{item.menuitem.title}</h3>
+            <p className="cart-price">€{item.price}</p>
 
-                            <button 
-                            className="remove-btn"
-                            onClick={() => removeFromCart(item.id)}
-                            >
-                            Remove
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            ))}
+            <div className="cart-qty-controls">
+              <button
+                onClick={() => decreaseQty(item.menuitem.id)}
+                className="qty-btn"
+              >
+                -
+              </button>
 
-            {cart.length > 0 && (
-                <div className="cart-footer">
-                    <h2>Total: €{total.toFixed(2)}</h2>
+              <span className="qty-number">{item.quantity}</span>
 
-                    <Link to="/checkout" className="checkout-btn">
-                    Proceed to checkout
-                    </Link>
+              <button
+                onClick={() => increaseQty(item.menuitem.id)}
+                className="qty-btn"
+              >
+                +
+              </button>
 
-                    <Link to="/order-online" className="back-btn">
-                    Continue Ordering
-                    </Link>
-                </div>
-            )}
-        </section>
-    );
+              <button
+                className="remove-btn"
+                onClick={() => removeFromCart(item.menuitem.id)}
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+
+      {cart.length > 0 && (
+        <div className="cart-footer">
+          <Link to="/checkout" className="checkout-btn">
+            Proceed to checkout
+          </Link>
+
+          <Link to="/order-online" className="back-btn">
+            Continue Ordering
+          </Link>
+        </div>
+      )}
+    </section>
+  );
 }
+

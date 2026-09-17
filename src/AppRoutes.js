@@ -9,6 +9,7 @@ import OrderOnlinePage from "./pages/OrderOnlinePage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import OrderConfirmationPage from "./pages/OrderConfirmationPage";
+import LoginPage from "./pages/LoginPage";
 
 
 export default function AppRoutes() {
@@ -35,6 +36,7 @@ export default function AppRoutes() {
       <Route path="/Cart" element={<CartPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
       <Route path="/order-confirmation" element={<OrderConfirmationPage />} />
+      <Route path="/login" element={<LoginPage />}/>
     </Routes>
   );
 }

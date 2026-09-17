@@ -3,8 +3,10 @@ import Navbar from "./components/Navbar/Navbar";
 import Footer from "./components/Footer/Footer";
 import AppRoutes from "./AppRoutes";
 import { CartProvider } from "./context/CartContext";
+import { AuthProvider } from "./context/AuthContext";
 function App() {
   return (
+    <AuthProvider>
     <CartProvider>
     <Router>
       <Navbar />
@@ -12,6 +14,7 @@ function App() {
       <Footer />
     </Router>
     </CartProvider>
+    </AuthProvider>
   );
 }
 
