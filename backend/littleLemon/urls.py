@@ -16,10 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from littleLemonAPI.auth_views import (
+    CookieLogoutView,
+    CookieTokenObtainPairView,
+    CookieTokenRefreshView,
+    csrf_token,
+)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("littleLemonAPI.urls")),
     path("api/auth/", include("djoser.urls")),
-    path("api/auth/", include("djoser.urls.jwt")),
+    path("api/auth/jwt/create/", CookieTokenObtainPairView.as_view()),
+    path("api/auth/jwt/refresh/", CookieTokenRefreshView.as_view()),
+    path("api/auth/jwt/logout/", CookieLogoutView.as_view()),
+    path("api/auth/csrf/", csrf_token),
 ]

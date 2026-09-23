@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
+import { getCsrfToken } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import "./CheckoutPage.css";
 
@@ -46,6 +47,7 @@ export default function CheckoutPage() {
 
     const res = await fetch("http://127.0.0.1:8000/api/orders", {
       method: "POST",
+      headers: { "X-CSRFToken": getCsrfToken() },
       credentials: "include",
     });
 

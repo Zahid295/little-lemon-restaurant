@@ -1,19 +1,19 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { useAuth } from "./AuthContext";
+import { getCsrfToken, useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const { accessToken } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [cart, setCart] = useState([]);
 
   async function loadCart() {
-    if (!accessToken) return;
+    if (!isAuthenticated) {
+      setCart([]);
+      return;
+    }
 
     const res = await fetch("http://127.0.0.1:8000/api/cart/menu-items", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
       credentials: "include",
     });
 
@@ -25,8 +25,8 @@ export function CartProvider({ children }) {
     await fetch("http://127.0.0.1:8000/api/cart/menu-items", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
+        "X-CSRFToken": getCsrfToken(),
       },
       credentials: "include",
       body: JSON.stringify({
@@ -56,9 +56,7 @@ export function CartProvider({ children }) {
   async function removeFromCart(menuitemId) {
     await fetch(`http://127.0.0.1:8000/api/cart/menu-items/${menuitemId}`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "X-CSRFToken": getCsrfToken() },
       credentials: "include",
     });
 
@@ -68,9 +66,7 @@ export function CartProvider({ children }) {
   async function clearCart() {
     await fetch("http://127.0.0.1:8000/api/cart/menu-items", {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
+      headers: { "X-CSRFToken": getCsrfToken() },
       credentials: "include",
     });
 
@@ -80,7 +76,7 @@ export function CartProvider({ children }) {
   useEffect(() => {
     loadCart();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken]);
+  }, [isAuthenticated]);
 
   return (
     <CartContext.Provider

@@ -1,63 +1,92 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
+const API_URL = "http://127.0.0.1:8000/api";
+
+export function getCsrfToken() {
+  const cookie = document.cookie
+    .split("; ")
+    .find((value) => value.startsWith("csrftoken="));
+
+  return cookie ? decodeURIComponent(cookie.split("=")[1]) : "";
+}
 
 export function AuthProvider({ children }) {
-  const [accessToken, setAccessToken] = useState(null);
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  async function requestCsrfToken() {
+    await fetch(`${API_URL}/auth/csrf/`, { credentials: "include" });
+  }
+
+  async function loadUser() {
+    const res = await fetch(`${API_URL}/auth/users/me/`, {
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      setUser(null);
+      return false;
+    }
+
+    setUser(await res.json());
+    return true;
+  }
 
   async function login(username, password) {
-    const res = await fetch("http://127.0.0.1:8000/api/auth/jwt/create/", {
+    await requestCsrfToken();
+    const res = await fetch(`${API_URL}/auth/jwt/create/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
       body: JSON.stringify({ username, password }),
     });
 
-    const data = await res.json();
-    setAccessToken(data.access);
-    await loadUser();
-  }
-
-  async function loadUser() {
-    if (!accessToken) return;
-
-    const res = await fetch("http://127.0.0.1:8000/api/auth/users/me/", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      credentials: "include",
-    });
-
-    const data = await res.json();
-    setUser(data);
+    if (!res.ok) return false;
+    return loadUser();
   }
 
   async function refreshToken() {
-    const res = await fetch("http://127.0.0.1:8000/api/auth/jwt/refresh/", {
+    const res = await fetch(`${API_URL}/auth/jwt/refresh/`, {
       method: "POST",
+      headers: { "X-CSRFToken": getCsrfToken() },
       credentials: "include",
     });
 
-    const data = await res.json();
-    setAccessToken(data.access);
+    return res.ok;
   }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      refreshToken();
-    }, 4 * 60 * 1000); // refresh every 4 minutes
+    async function restoreSession() {
+      await requestCsrfToken();
+      if (!(await loadUser())) {
+        if (await refreshToken()) await loadUser();
+      }
+      setIsLoading(false);
+    }
+
+    restoreSession();
+
+    const interval = setInterval(async () => {
+      if (await refreshToken()) await loadUser();
+    }, 4 * 60 * 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  function logout() {
-    setAccessToken(null);
+  async function logout() {
+    await fetch(`${API_URL}/auth/jwt/logout/`, {
+      method: "POST",
+      headers: { "X-CSRFToken": getCsrfToken() },
+      credentials: "include",
+    });
     setUser(null);
   }
 
   return (
-    <AuthContext.Provider value={{ accessToken, user, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isAuthenticated: Boolean(user), isLoading, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
