@@ -19,6 +19,8 @@ export default function CheckoutPage() {
     });
 
     const [errors, setErrors] = useState({});
+    const [submissionError, setSubmissionError] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleChange = (e) => {
         setForm({...form, [e.target.name]: e.target.value});
@@ -45,26 +47,42 @@ export default function CheckoutPage() {
 
     if (!validate()) return;
 
-    const res = await fetch("http://127.0.0.1:8000/api/orders", {
-      method: "POST",
-      headers: { "X-CSRFToken": getCsrfToken() },
-      credentials: "include",
-    });
+      setSubmissionError("");
+      setIsSubmitting(true);
 
-    if (!res.ok) {
-      alert("Failed to place order. Please try again.");
-      return;
-    }
+      try {
+        const res = await fetch("http://127.0.0.1:8000/api/orders", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCsrfToken(),
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            customer_name: form.name,
+            customer_email: form.email,
+            customer_phone: form.phone,
+            order_type: form.orderType,
+            street: form.street,
+            city: form.city,
+            postcode: form.postcode,
+          }),
+        });
 
-    const order = await res.json(); 
+        const responseData = await res.json();
+        if (!res.ok) {
+          const firstFieldError = Object.values(responseData).flat()[0];
+          throw new Error(
+            responseData.detail || responseData.message || firstFieldError || "Failed to place order. Please try again."
+          );
+        }
 
-    
-    navigate("/order-confirmation", {
-      state: {
-        order,
-        customer: form,
-      },
-    });
+        navigate(`/order-confirmation/${responseData.id}`);
+      } catch (error) {
+        setSubmissionError(error.message || "Unable to place your order. Please try again.");
+      } finally {
+        setIsSubmitting(false);
+      }
   }
 
     const total = cart.reduce((sum, item) => {
@@ -158,8 +176,9 @@ export default function CheckoutPage() {
         </div>
 
         <button type="submit" className="place-order-btn">
-          Place Order
+          {isSubmitting ? "Placing Order..." : "Place Order"}
         </button>
+        {submissionError && <p className="error" role="alert">{submissionError}</p>}
       </div>
 
     </div>

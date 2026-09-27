@@ -168,13 +168,17 @@ class OrderListCreateView(generics.ListCreateAPIView):
         cart_items = Cart.objects.filter(user=user)
         if not cart_items.exists():
             return Response({"message": "Cart is empty"}, status.HTTP_400_BAD_REQUEST)
+
+        checkout_serializer = OrderSerializer(data=request.data)
+        checkout_serializer.is_valid(raise_exception=True)
         
         total = sum(item.price for item in cart_items)
 
         order = Order.objects.create(
             user=user,
             total=total,
-            date=date.today()
+            date=date.today(),
+            **checkout_serializer.validated_data,
         )
 
         for item in cart_items:

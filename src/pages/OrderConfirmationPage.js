@@ -1,15 +1,54 @@
-import { useLocation, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import "./OrderConfirmationPage.css";
 
 export default function OrderConfirmationPage() {
-  const { state } = useLocation();
+  const { orderId } = useParams();
+  const { isLoading: isAuthLoading } = useAuth();
+  const [order, setOrder] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  if (!state || !state.order) {
+  useEffect(() => {
+    if (isAuthLoading) return undefined;
+
+    let isCurrent = true;
+
+    async function loadOrder() {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/orders/${orderId}`, {
+          credentials: "include",
+        });
+        if (!response.ok) throw new Error("Unable to load this order.");
+        const savedOrder = await response.json();
+        if (isCurrent) setOrder(savedOrder);
+      } catch (loadError) {
+        if (isCurrent) setError(loadError.message);
+      } finally {
+        if (isCurrent) setIsLoading(false);
+      }
+    }
+
+    loadOrder();
+    return () => {
+      isCurrent = false;
+    };
+  }, [isAuthLoading, orderId]);
+
+  if (isAuthLoading || isLoading) {
+    return <section className="confirmation-page">Loading order...</section>;
+  }
+
+  if (error || !order) {
     return (
       <section className="confirmation-page">
         <h1 className="confirmation-title">Order Not Found</h1>
         <p className="confirmation-subtitle">
-          It looks like you navigated here without placing an order.
+          {error || "This order could not be found."}
         </p>
         <Link to="/order-online" className="home-btn">
           Continue Ordering
@@ -18,12 +57,10 @@ export default function OrderConfirmationPage() {
     );
   }
 
-  const { order, customer } = state;
-
   const total = Number(order.total);
 
   const eta =
-    customer.orderType === "pickup"
+    order.order_type === "pickup"
       ? "Ready in 15 minutes"
       : "Delivered in 30-45 minutes";
 
@@ -32,7 +69,7 @@ export default function OrderConfirmationPage() {
       <div className="confirmation-header">
         <h1 className="confirmation-title">Order Confirmed</h1>
         <p className="confirmation-subtitle">
-          Thank you, {customer.name}. Your order has been successfully placed.
+          Thank you, {order.customer_name}. Your order has been successfully placed.
         </p>
       </div>
 
@@ -41,16 +78,16 @@ export default function OrderConfirmationPage() {
         <div className="confirmation-card">
           <h2 className="section-heading">Order Details</h2>
 
-          <p><strong>Name:</strong> {customer.name}</p>
-          <p><strong>Email:</strong> {customer.email}</p>
-          <p><strong>Phone:</strong> {customer.phone}</p>
-          <p><strong>Order Type:</strong> {customer.orderType}</p>
+          <p><strong>Name:</strong> {order.customer_name}</p>
+          <p><strong>Email:</strong> {order.customer_email}</p>
+          <p><strong>Phone:</strong> {order.customer_phone}</p>
+          <p><strong>Order Type:</strong> {order.order_type}</p>
 
-          {customer.orderType === "delivery" && (
+          {order.order_type === "delivery" && (
             <>
-              <p><strong>Street:</strong> {customer.street}</p>
-              <p><strong>City:</strong> {customer.city}</p>
-              <p><strong>Postcode:</strong> {customer.postcode}</p>
+              <p><strong>Street:</strong> {order.street}</p>
+              <p><strong>City:</strong> {order.city}</p>
+              <p><strong>Postcode:</strong> {order.postcode}</p>
             </>
           )}
 

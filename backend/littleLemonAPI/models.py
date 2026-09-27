@@ -39,11 +39,23 @@ class Cart(models.Model):
 
 
 class Order(models.Model):
+    ORDER_TYPE_CHOICES = [
+        ("pickup", "Pickup"),
+        ("delivery", "Delivery"),
+    ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     delivery_crew = models.ForeignKey(User, on_delete=models.SET_NULL, related_name="delivery_crew", null=True)
     status = models.BooleanField(db_index=True, default=0)
     total = models.DecimalField(max_digits=6, decimal_places=2)
     date = models.DateField(db_index=True)
+    customer_name = models.CharField(max_length=255, blank=True, default="")
+    customer_email = models.EmailField(blank=True, default="")
+    customer_phone = models.CharField(max_length=32, blank=True, default="")
+    order_type = models.CharField(max_length=10, choices=ORDER_TYPE_CHOICES, default="pickup")
+    street = models.CharField(max_length=255, blank=True, default="")
+    city = models.CharField(max_length=255, blank=True, default="")
+    postcode = models.CharField(max_length=32, blank=True, default="")
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
