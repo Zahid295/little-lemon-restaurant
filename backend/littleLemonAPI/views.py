@@ -1,14 +1,25 @@
 from django.shortcuts import render
+from django.conf import settings
 from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.core.paginator import Paginator, EmptyPage
 from django.shortcuts import get_object_or_404
-from django.db import models
+from django.db import models, transaction
+from django.utils import timezone
 from datetime import date
 from django.contrib.auth.models import User
-from .models import MenuItem, Cart, Order, OrderItem
-from .serializers import MenuItemSerializer, CartSerializer, OrderSerializer, UserSerializer
+from rest_framework.views import APIView
+from .models import MenuItem, Cart, Order, OrderItem, Reservation, ReservationSlot
+from .serializers import (
+    MenuItemSerializer,
+    CartSerializer,
+    OrderSerializer,
+    UserSerializer,
+    ReservationAvailabilitySerializer,
+    ReservationSerializer,
+)
+from .reservation_services import get_reservation_slot_starts, release_slot, reserve_slot
 
 # Create your views here.
 
@@ -270,4 +281,104 @@ class OrderDetailUpdateView(generics.RetrieveUpdateDestroyAPIView):
             return Response({"message": "Order not found"}, status.HTTP_404_NOT_FOUND)
         order.delete()
         return Response({"message": "Order deleted successfully"}, status.HTTP_200_OK)
+
+
+class ReservationAvailabilityView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        query_serializer = ReservationAvailabilitySerializer(data=request.query_params)
+        query_serializer.is_valid(raise_exception=True)
+        reservation_date = query_serializer.validated_data["date"]
+        guests = query_serializer.validated_data["guests"]
+        slot_starts = get_reservation_slot_starts(reservation_date)
+        occupied_slots = dict(
+            ReservationSlot.objects.filter(starts_at__in=slot_starts).values_list(
+                "starts_at", "reserved_guests"
+            )
+        )
+        available_times = [
+            slot_start.strftime("%H:%M")
+            for slot_start in slot_starts
+            if settings.RESERVATION_SLOT_CAPACITY - occupied_slots.get(slot_start, 0) >= guests
+        ]
+        return Response(
+            {
+                "date": reservation_date.isoformat(),
+                "guests": guests,
+                "available_times": available_times,
+            }
+        )
+
+
+class ReservationListCreateView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ReservationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        starts_at = serializer.validated_data["starts_at"]
+        guests = serializer.validated_data["guests"]
+
+        with transaction.atomic():
+            if not reserve_slot(starts_at, guests):
+                return Response(
+                    {"detail": "That time no longer has enough capacity. Choose another slot."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            reservation = serializer.save(
+                user=request.user if request.user.is_authenticated else None
+            )
+
+        response = Response(ReservationSerializer(reservation).data, status=status.HTTP_201_CREATED)
+        response["Cache-Control"] = "no-store"
+        return response
+
+
+class ReservationConfirmationView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, confirmation_code):
+        reservation = get_object_or_404(
+            Reservation, confirmation_code=confirmation_code
+        )
+        response = Response(ReservationSerializer(reservation).data)
+        response["Cache-Control"] = "no-store"
+        return response
+
+
+class ReservationCancelView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, confirmation_code):
+        with transaction.atomic():
+            reservation = get_object_or_404(
+                Reservation.objects,
+                confirmation_code=confirmation_code,
+            )
+            if reservation.status == "cancelled":
+                return Response(ReservationSerializer(reservation).data)
+            if reservation.starts_at <= timezone.now():
+                return Response(
+                    {"detail": "Past reservations cannot be cancelled."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            was_cancelled = Reservation.objects.filter(
+                pk=reservation.pk,
+                status="confirmed",
+            ).update(status="cancelled")
+            if not was_cancelled:
+                reservation.refresh_from_db()
+                return Response(ReservationSerializer(reservation).data)
+            if not release_slot(reservation.starts_at, reservation.guests):
+                transaction.set_rollback(True)
+                return Response(
+                    {"detail": "Reservation capacity could not be updated."},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            reservation.refresh_from_db()
+
+        response = Response(ReservationSerializer(reservation).data)
+        response["Cache-Control"] = "no-store"
+        return response
 

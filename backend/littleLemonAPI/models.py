@@ -1,6 +1,9 @@
 # Create your models here.
 
+import uuid
+
 from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 
 class Category(models.Model):
@@ -66,4 +69,47 @@ class OrderItem(models.Model):
 
     class Meta:
         unique_together = ("order", "menuitem")
+
+
+class ReservationSlot(models.Model):
+    starts_at = models.DateTimeField(unique=True)
+    reserved_guests = models.PositiveSmallIntegerField(default=0)
+
+    def __str__(self):
+        return self.starts_at.isoformat()
+
+
+class Reservation(models.Model):
+    STATUS_CHOICES = [
+        ("confirmed", "Confirmed"),
+        ("cancelled", "Cancelled"),
+    ]
+    OCCASION_CHOICES = [
+        ("birthday", "Birthday"),
+        ("anniversary", "Anniversary"),
+        ("other", "Other"),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reservations",
+    )
+    confirmation_code = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    customer_name = models.CharField(max_length=255)
+    customer_email = models.EmailField()
+    customer_phone = models.CharField(max_length=32)
+    starts_at = models.DateTimeField(db_index=True)
+    guests = models.PositiveSmallIntegerField()
+    occasion = models.CharField(max_length=16, choices=OCCASION_CHOICES, default="other")
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="confirmed")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["starts_at"]
+
+    def __str__(self):
+        return f"{self.customer_name} - {self.starts_at.isoformat()}"
 

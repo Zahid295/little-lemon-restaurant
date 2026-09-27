@@ -1,25 +1,76 @@
-import { initializeTimes } from "./Reservations";
-import { updateTimes } from "./Reservations";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import Reservations from "./Reservations";
 
-test("initializeTimes returns the available times from fetchAPI", () => {
-    const mockTimes = ["17:00", "18:00", "19:00"]
-    global.fetchAPI = jest.fn(() => mockTimes)
-    const result = initializeTimes();
+const mockNavigate = jest.fn();
 
-    expect(result).toEqual(mockTimes);
-    expect(fetchAPI).toHaveBeenCalled();
+jest.mock("react-router-dom", () => ({
+    useNavigate: () => mockNavigate,
+}));
+
+function renderReservations() {
+    return render(<Reservations />);
+}
+
+afterEach(() => {
+    jest.resetAllMocks();
+    mockNavigate.mockReset();
 });
 
-test("updateTimes updates available times based on the selected date", () => {
-    const mockTimes = ["17:00", "18:00"];
-    const selectedDate = new Date("2026-08-11");
+test("loads available times from the backend for the selected date and party size", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ available_times: ["17:00", "17:30"] }),
+    });
 
-    global.fetchAPI = jest.fn(() => mockTimes);
-    const state = ["16:00"];
-    const action = { type: "update-times", payload: selectedDate };
+    renderReservations();
 
-    const result = updateTimes(state, action);
+    expect(await screen.findByRole("option", { name: "17:00" })).toBeInTheDocument();
+    expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringMatching(/\/reservations\/availability\?date=\d{4}-\d{2}-\d{2}&guests=1/),
+        expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
+});
 
-    expect(result).toEqual(mockTimes);
-    expect(fetchAPI).toHaveBeenCalledWith(selectedDate);
+test("submits the reservation and routes to its saved confirmation", async () => {
+    const confirmationCode = "b1d9a5d4-3c55-4b16-92cb-6e887daf21b1";
+    global.fetch = jest.fn((url, options = {}) => {
+        if (String(url).includes("/availability")) {
+            return Promise.resolve({
+                ok: true,
+                json: async () => ({ available_times: ["17:00"] }),
+            });
+        }
+        return Promise.resolve({
+            ok: true,
+            json: async () => ({ confirmation_code: confirmationCode }),
+        });
+    });
+
+    renderReservations();
+    fireEvent.change(await screen.findByLabelText("Full name"), {
+        target: { value: "Ava Lemon" },
+    });
+    fireEvent.change(screen.getByLabelText("Email"), {
+        target: { value: "ava@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Phone"), {
+        target: { value: "555-0100" },
+    });
+    fireEvent.change(screen.getByLabelText("Choose time"), {
+        target: { value: "17:00" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Make your Reservation" }));
+
+    await waitFor(() =>
+        expect(mockNavigate).toHaveBeenCalledWith(`/confirmed/${confirmationCode}`)
+    );
+    await waitFor(() =>
+        expect(global.fetch).toHaveBeenCalledWith(
+            "http://127.0.0.1:8000/api/reservations",
+            expect.objectContaining({
+                method: "POST",
+                body: expect.stringContaining('"customer_name":"Ava Lemon"'),
+            })
+        )
+    );
 });

@@ -1,15 +1,43 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import BookingForm from "./BookingForm";
 
-test("renders Choose time and Number of guests labels", () => {
-    const mockDispatch = () => {};
+function getDateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
 
-    render(
-        <BookingForm
-        availableTimes={["17:00", "18:00"]}
-        dispatch={mockDispatch}
-        />
-    );
+function renderBookingForm(formOverrides = {}) {
+  const form = {
+    date: "",
+    time: "",
+    guests: 1,
+    occasion: "birthday",
+    customer_name: "",
+    customer_email: "",
+    customer_phone: "",
+    ...formOverrides,
+  };
+
+  return render(
+    <BookingForm
+      form={form}
+      setForm={jest.fn()}
+      updateDate={jest.fn()}
+      updateGuests={jest.fn()}
+      availableTimes={["17:00", "18:00"]}
+      isLoadingTimes={false}
+      availabilityError=""
+      submissionError=""
+      isSubmitting={false}
+      submitReservation={jest.fn()}
+    />
+  );
+}
+
+test("renders Choose time and Number of guests labels", () => {
+    renderBookingForm();
 
     const chooseTimeLabel = screen.getByTestId("choose-time-label");
     const guestsLabel = screen.getByTestId("guests-label");
@@ -19,53 +47,23 @@ test("renders Choose time and Number of guests labels", () => {
 });
 
 test("date input has required and min attributes", () => {
-  const mockDispatch = jest.fn();
-  const mockSubmit = jest.fn();
-
-  render(
-    <BookingForm
-      availableTimes={["17:00", "18:00"]}
-      dispatch={mockDispatch}
-      submitForm={mockSubmit}
-    />
-  );
+  renderBookingForm();
 
   const dateInput = screen.getByLabelText("Choose date");
 
   expect(dateInput).toBeRequired();
-  expect(dateInput).toHaveAttribute(
-    "min",
-    new Date().toISOString().split("T")[0]
-  );
+  expect(dateInput).toHaveAttribute("min", getDateString(new Date()));
 });
 
 test("time select is required", () => {
-  const mockDispatch = jest.fn();
-  const mockSubmit = jest.fn();
-
-  render(
-    <BookingForm
-      availableTimes={["17:00", "18:00"]}
-      dispatch={mockDispatch}
-      submitForm={mockSubmit}
-    />
-  );
+  renderBookingForm();
 
   const timeSelect = screen.getByLabelText("Choose time");
   expect(timeSelect).toBeRequired();
 });
 
 test("guests input has min and max constraints", () => {
-  const mockDispatch = jest.fn();
-  const mockSubmit = jest.fn();
-
-  render(
-    <BookingForm
-      availableTimes={["17:00", "18:00"]}
-      dispatch={mockDispatch}
-      submitForm={mockSubmit}
-    />
-  );
+  renderBookingForm();
 
   const guestsInput = screen.getByLabelText("Number of guests");
 
@@ -74,42 +72,24 @@ test("guests input has min and max constraints", () => {
 });
 
 test("submit button is disabled when form is invalid", () => {
-  const mockDispatch = jest.fn();
-  const mockSubmit = jest.fn();
+  renderBookingForm();
 
-  render(
-    <BookingForm
-      availableTimes={["17:00", "18:00"]}
-      dispatch={mockDispatch}
-      submitForm={mockSubmit}
-    />
-  );
-
-  const submitButton = screen.getByTestId("submit-button");
+  const submitButton = screen.getByRole("button", { name: "Make your Reservation" });
 
   expect(submitButton).toBeDisabled();
 });
 
 test("submit button becomes enabled when form is valid", () => {
-  const mockDispatch = jest.fn();
-  const mockSubmit = jest.fn();
+  renderBookingForm({
+    date: getDateString(new Date(Date.now() + 24 * 60 * 60 * 1000)),
+    time: "17:00",
+    guests: 4,
+    customer_name: "Ava Lemon",
+    customer_email: "ava@example.com",
+    customer_phone: "555-0100",
+  });
 
-  render(
-    <BookingForm
-      availableTimes={["17:00", "18:00"]}
-      dispatch={mockDispatch}
-      submitForm={mockSubmit}
-    />
-  );
-
-  const dateInput = screen.getByLabelText("Choose date");
-  const timeSelect = screen.getByLabelText("Choose time");
-  const guestsInput = screen.getByLabelText("Number of guests");
-  const submitButton = screen.getByTestId("submit-button");
-
-  fireEvent.change(dateInput, { target: { value: "2026-08-10" } });
-  fireEvent.change(timeSelect, { target: { value: "17:00" } });
-  fireEvent.change(guestsInput, { target: { value: "4" } });
+  const submitButton = screen.getByRole("button", { name: "Make your Reservation" });
 
   expect(submitButton).toBeEnabled();
 });

@@ -1,5 +1,4 @@
-/* global submitAPI */
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import AboutPage from "./pages/AboutPage";
 import MenuPage from "./pages/MenuPage";
@@ -13,15 +12,6 @@ import LoginPage from "./pages/LoginPage";
 
 
 export default function AppRoutes() {
-  const navigate = useNavigate();
-
-  function submitForm(formData) {
-    const success = submitAPI(formData);
-    if (success) {
-      navigate("/confirmed");
-    }
-  }
-
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -29,9 +19,9 @@ export default function AppRoutes() {
       <Route path="/menu" element={<MenuPage />} />
       <Route
         path="/reservations"
-        element={<Reservations submitForm={submitForm} />}
+        element={<Reservations />}
       />
-      <Route path="/confirmed" element={<ConfirmedBooking />} />
+      <Route path="/confirmed/:confirmationCode" element={<ConfirmedBooking />} />
       <Route path="/order-online" element={<OrderOnlinePage />} />
       <Route path="/Cart" element={<CartPage />} />
       <Route path="/checkout" element={<CheckoutPage />} />
