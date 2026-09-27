@@ -14,12 +14,16 @@ class MenuItemSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'price', 'featured', 'description', 'image', 'category', 'category_id']
 
 class CartSerializer(serializers.ModelSerializer):
+    menuitem = MenuItemSerializer(read_only=True)
+
     class Meta:
         model = Cart
         fields = ["id", "menuitem", "quantity", "unit_price", "price"]
         read_only_fields = ["unit_price", "price"]
 
 class OrderItemSerializer(serializers.ModelSerializer):
+    menuitem = MenuItemSerializer(read_only=True)
+
     class Meta:
         model = OrderItem
         fields = ["id", "menuitem", "quantity", "unit_price", "price"]

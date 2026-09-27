@@ -135,6 +135,19 @@ class CartView(generics.ListCreateAPIView):
     def delete(self, request):
         Cart.objects.filter(user=request.user).delete()
         return Response({"message": "Cart removed"}, status.HTTP_200_OK)
+
+
+class CartItemDeleteView(generics.DestroyAPIView):
+    permission_classes = [IsAuthenticated]
+    lookup_url_kwarg = "menuitem_id"
+
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+
+    def get_object(self):
+        return get_object_or_404(
+            self.get_queryset(), menuitem_id=self.kwargs[self.lookup_url_kwarg]
+        )
     
 
 class OrderListCreateView(generics.ListCreateAPIView):
